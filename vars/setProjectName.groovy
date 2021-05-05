@@ -1,4 +1,6 @@
 def call() {
-  allJob = env.JOB_NAME.tokenize('/') as String[];
-  env.PROJECT_NAME = allJob[0];
+  script {
+    allJob = env.JOB_NAME.tokenize('/') as String[];
+    env.PROJECT_NAME = allJob[0];
+  }
 }
