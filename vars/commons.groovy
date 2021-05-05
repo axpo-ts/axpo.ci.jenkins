@@ -1,7 +1,7 @@
 def setProjectName() {
   script {
     allJob = env.JOB_NAME.tokenize('/') as String[];
-  env.PROJECT_NAME = allJob[0];
+    env.PROJECT_NAME = allJob[0];
   }
 }
 
