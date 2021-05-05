@@ -7,15 +7,13 @@ def setProjectName() {
 def makeVersion() {
   // generate semantic version using gitversion
   powershell "dotnet-gitversion /output buildserver"
-  script {
-    // inject gitversion props as environment variables
-    readFile('gitversion.properties').split("\r\n").each { line ->
-        el = line.split("=")
-        env."${el[0]}" = (el.size() > 1) ? "${el[1]}" : ""
-    }
-    // going for the nuget-version format
-    env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
+  // inject gitversion props as environment variables
+  readFile('gitversion.properties').split("\r\n").each { line ->
+    el = line.split("=")
+    env."${el[0]}" = (el.size() > 1) ? "${el[1]}" : ""
   }
+  // going for the nuget-version format
+  env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
   echo "Version: ${env.GIT_VERSION}"
 }
 
@@ -27,9 +25,7 @@ def dotnetBuild() {
 }
 
 def dotnetPack() {
-  script {
-     outDir = "./artefacts/"
-  }
+  outDir = "./artefacts/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
   powershell "dotnet pack . /p:Version=${env.GIT_VERSION} --include-symbols --include-source --no-build /p:Configuration=Release --output ${outDir}"
@@ -40,9 +36,7 @@ def dotnetPublish(Map args) {
 }
 
 def jfrogUpload(Map args) {
-  script {
-    artifactoryBuildNumber = "${env.GIT_BRANCH}-${env.BUILD_ID}"
-  }
+  artifactoryBuildNumber = "${env.GIT_BRANCH}-${env.BUILD_ID}"
   rtServer (
     id: 'ARTIFACTORY_SERVER',
     url: "${env.ARTIFACTORY_SERVER}",
@@ -70,9 +64,7 @@ def jfrogUpload(Map args) {
 }
 
 def octoUpload(Map args) {
-  script {
-    zip zipFile: "${args.zipfile}", archive: false, dir: 'octo_upload', overwrite: true
-  }
+  zip zipFile: "${args.zipfile}", archive: false, dir: 'octo_upload', overwrite: true
   echo "upload ${args.zipfile} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
     powershell "${tool('Octo CLI')}/Octo push --package ${args.zipfile} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}"
