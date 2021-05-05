@@ -1,8 +1,10 @@
-def call(script) {
+def call() {
   script {
-    allJob = script.env.JOB_NAME.tokenize('/') as String[];
+    allJob = env.JOB_NAME.tokenize('/') as String[];
     //env.PROJECT_NAME = allJob[0];
     name = allJob[0];
     echo "Project name: ${name}"
   }
 }
+
+return this
