@@ -1,3 +1,26 @@
+def setProjectName() {
+  script {
+    allJob = env.JOB_NAME.tokenize('/') as String[];
+    env.PROJECT_NAME = allJob[0];
+  }
+  echo "Project name: ${env.PROJECT_NAME}"
+}
+
+def makeVersion() {
+  // generate semantic version using gitversion
+  powershell "dotnet-gitversion /output buildserver"
+  script {
+    // inject gitversion props as environment variables
+    readFile('gitversion.properties').split("\r\n").each { line ->
+        el = line.split("=")
+        env."${el[0]}" = (el.size() > 1) ? "${el[1]}" : ""
+    }
+    // going for the nuget-version format
+    env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
+  }
+  echo "Version: ${env.GIT_VERSION}"
+}
+
 def dotnetBuild() {
   powershell "dotnet --version"
   powershell "dotnet clean"
