@@ -1,10 +1,3 @@
-def setProjectName() {
-  script {
-    allJob = env.JOB_NAME.tokenize('/') as String[];
-    env.PROJECT_NAME = allJob[0];
-  }
-}
-
 def makeVersion() {
   // generate semantic version using gitversion
   powershell "dotnet-gitversion /output buildserver"
