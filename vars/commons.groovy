@@ -67,7 +67,7 @@ def octoUpload(Map args) {
   zip zipFile: "${args.zipfile}", archive: false, dir: 'octo_upload', overwrite: true
   echo "upload ${args.zipfile} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
-    powershell "${tool('Octo CLI')}/Octo push --package ${args.zipfile} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}"
+    powershell "${tool('Octo CLI')} push --package ${args.zipfile} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}"
   }
 }
 
