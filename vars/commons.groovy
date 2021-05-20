@@ -5,9 +5,9 @@ def setProjectName() {
 }
 
 def makeVersion() {
-  if [ -n "${CHANGE_ID}" ] ; then
+  if(env.CHANGE_ID) {
     env.GIT_VERSION = "${env.GIT_BRANCH}"
-  else
+  } else {
     // generate semantic version using gitversion
     powershell "dotnet-gitversion /output buildserver"
     // inject gitversion props as environment variables
@@ -17,7 +17,7 @@ def makeVersion() {
     }
     // going for the nuget-version format
     env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
-  fi
+  }
   echo "Version: ${env.GIT_VERSION}"
 }
 
