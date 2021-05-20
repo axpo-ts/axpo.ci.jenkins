@@ -5,15 +5,21 @@ def setProjectName() {
 }
 
 def makeVersion() {
-  // generate semantic version using gitversion
-  powershell "dotnet-gitversion /output buildserver"
-  // inject gitversion props as environment variables
-  readFile('gitversion.properties').split("\r\n").each { line ->
-    el = line.split("=")
-    env."${el[0]}" = (el.size() > 1) ? "${el[1]}" : ""
+  if(env.CHANGE_ID) {
+    // this is a workaround: gitversion is not able to come up with a version inside a PR in jenkins
+    echo "processing Pull Request: dummy semantic version."
+    env.GIT_VERSION = "1.0.0-${env.GIT_BRANCH}"
+  } else {
+    // generate semantic version using gitversion
+    powershell "dotnet-gitversion /output buildserver"
+    // inject gitversion props as environment variables
+    readFile('gitversion.properties').split("\r\n").each { line ->
+      el = line.split("=")
+      env."${el[0]}" = (el.size() > 1) ? "${el[1]}" : ""
+    }
+    // going for the nuget-version format
+    env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
   }
-  // going for the nuget-version format
-  env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
   echo "Version: ${env.GIT_VERSION}"
 }
 
@@ -21,14 +27,14 @@ def dotnetBuild() {
   powershell "dotnet --version"
   powershell "dotnet clean"
   powershell "dotnet restore"
-  powershell "dotnet build . /p:Version=${env.GIT_VERSION} /p:Configuration=Release"
+  powershell "dotnet build . -c Release /p:Version=${env.GIT_VERSION}"
 }
 
 def dotnetPack() {
   outDir = "./artefacts/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
-  powershell "dotnet pack . /p:Version=${env.GIT_VERSION} --include-symbols --include-source --no-build /p:Configuration=Release --output ${outDir}"
+  powershell "dotnet pack . -c Release --include-symbols --include-source --no-build --output ${outDir} /p:Version=${env.GIT_VERSION}"
 }
 
 def dotnetPublish(Map args) {
