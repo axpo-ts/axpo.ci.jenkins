@@ -6,6 +6,7 @@ def setProjectName() {
 
 def makeVersion() {
   if(env.CHANGE_ID) {
+    echo "processing Pull Request: no semantic version."
     env.GIT_VERSION = "${env.GIT_BRANCH}"
   } else {
     // generate semantic version using gitversion
@@ -25,14 +26,14 @@ def dotnetBuild() {
   powershell "dotnet --version"
   powershell "dotnet clean"
   powershell "dotnet restore"
-  powershell "dotnet build . /p:Version=${env.GIT_VERSION} /p:Configuration=Release"
+  powershell "dotnet build . -c Release /p:Version=${env.GIT_VERSION}"
 }
 
 def dotnetPack() {
   outDir = "./artefacts/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
-  powershell "dotnet pack . /p:Version=${env.GIT_VERSION} --include-symbols --include-source --no-build /p:Configuration=Release --output ${outDir}"
+  powershell "dotnet pack . -c Release --include-symbols --include-source --no-build --output ${outDir} /p:Version=${env.GIT_VERSION}"
 }
 
 def dotnetPublish(Map args) {
