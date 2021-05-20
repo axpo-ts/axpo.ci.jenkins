@@ -6,8 +6,8 @@ def setProjectName() {
 
 def makeVersion() {
   if(env.CHANGE_ID) {
-    echo "processing Pull Request: no semantic version."
-    env.GIT_VERSION = "${env.GIT_BRANCH}"
+    echo "processing Pull Request: dummy semantic version."
+    env.GIT_VERSION = "1.0.0-${env.GIT_BRANCH}"
   } else {
     // generate semantic version using gitversion
     powershell "dotnet-gitversion /output buildserver"
