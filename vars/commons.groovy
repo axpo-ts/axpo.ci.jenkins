@@ -5,21 +5,15 @@ def setProjectName() {
 }
 
 def makeVersion() {
-  if(env.CHANGE_ID) {
-    // this is a workaround: gitversion is not able to come up with a version inside a PR in jenkins
-    echo "processing Pull Request: dummy semantic version."
-    env.GIT_VERSION = "1.0.0-${env.GIT_BRANCH}"
-  } else {
-    // generate semantic version using gitversion
-    powershell "dotnet-gitversion /output buildserver"
-    // inject gitversion props as environment variables
-    readFile('gitversion.properties').split("\r\n").each { line ->
-      el = line.split("=")
-      env."${el[0]}" = (el.size() > 1) ? "${el[1]}" : ""
-    }
-    // going for the nuget-version format
-    env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
+  // generate semantic version using gitversion
+  powershell "dotnet-gitversion /output buildserver"
+  // inject gitversion props as environment variables
+  readFile('gitversion.properties').split("\r\n").each { line ->
+    el = line.split("=")
+    env."${el[0]}" = (el.size() > 1) ? "${el[1]}" : ""
   }
+  // going for the nuget-version format
+  env.GIT_VERSION = "${env.GitVersion_NugetVersion}"
   echo "Version: ${env.GIT_VERSION}"
 }
 
