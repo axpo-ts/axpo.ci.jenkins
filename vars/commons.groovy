@@ -75,7 +75,7 @@ def octoUpload(Map args) {
 def pushTag() {
   echo "create and push new git tag"
   powershell "git tag -f ${env.GIT_VERSION}"
-  withCredentials([usernamePassword(credentialsId: 'Bitbucket', usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
+  withCredentials([usernamePassword(credentialsId: 'c2457393-c808-4b22-a3a6-26316ad4e562', usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
     powershell '''
       git config --local credential.helper "!{echo username=''' + "$GIT_USR" + '''; echo password=''' + "$GIT_PWD" + '''; }"
       git push origin :refs/tags/''' + "${env.GIT_VERSION}" + '''
