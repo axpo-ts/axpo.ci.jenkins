@@ -64,10 +64,21 @@ def jfrogUpload(Map args) {
 }
 
 def octoUpload(Map args) {
-  zip zipFile: "${args.zipfile}", archive: false, dir: 'octo_upload', overwrite: true
-  echo "upload ${args.zipfile} to octopus ${env.OCTOPUS_SERVER}."
+  filename = "${args.name}.${env.GIT_VERSION}.zip"
+  zip zipFile: "${filename}", archive: false, dir: 'octo_upload', overwrite: true
+  echo "upload ${filename} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
-    powershell "${tool('Octo CLI')} push --package ${args.zipfile} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}"
+    powershell("${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}")
+  }
+}
+
+def pushTag() {
+  echo "create new git tag"
+  powershell "git tag -f ${env.GIT_VERSION}"
+  gitUrlBase = "${GIT_URL}".split("//")[1]
+  withCredentials([usernamePassword(credentialsId: 'c2457393-c808-4b22-a3a6-26316ad4e562', usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
+    powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
+    powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} ${env.GIT_VERSION}")
   }
 }
 
