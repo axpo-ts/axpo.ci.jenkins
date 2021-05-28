@@ -68,7 +68,7 @@ def octoUpload(Map args) {
   zip zipFile: "${filename}", archive: false, dir: 'octo_upload', overwrite: true
   echo "upload ${filename} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
-    powershell "${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}"
+    sh("${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}")
   }
 }
 
@@ -77,9 +77,9 @@ def pushTag() {
   powershell "git tag -f ${env.GIT_VERSION}"
   gitUrlBase = "${GIT_URL}".split("//")[1]
   withCredentials([usernamePassword(credentialsId: 'c2457393-c808-4b22-a3a6-26316ad4e562', usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
-    powershell("echo 'pushing tags to https://${GIT_USR}:${GIT_PWD}@${gitUrlBase}'")
-    powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
-    powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} ${env.GIT_VERSION}")
+    //sh("echo 'pushing tags to https://${GIT_USR}:${GIT_PWD}@${gitUrlBase}'")
+    sh("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
+    sh("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} ${env.GIT_VERSION}")
   }
 }
 
