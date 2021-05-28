@@ -78,9 +78,8 @@ def pushTag() {
   GIT_AUTH = credentials('BitBucket')
   powershell '''
     git config --local credential.helper "!f() { echo username=\\$GIT_AUTH_USR; echo password=\\$GIT_AUTH_PSW; }; f"
-    git push origin :refs/tags/${env.GIT_VERSION}
-    git push origin ${env.GIT_VERSION}
-  '''
+    git push origin :refs/tags/''' + "${env.GIT_VERSION}" + '''
+    git push origin ''' + "${env.GIT_VERSION}"
 }
 
 return this
