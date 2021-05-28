@@ -76,7 +76,7 @@ def pushTag() {
   echo "create and push new git tag"
   powershell "git tag -f ${env.GIT_VERSION}"
   gitUrlBase = "${GIT_URL}".split("//")[1]
-  echo $gitUrlBase
+  echo "${gitUrlBase}"
   withCredentials([usernamePassword(credentialsId: 'c2457393-c808-4b22-a3a6-26316ad4e562', usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
     powershell("echo https://${GIT_USR}:${GIT_PWD}@${gitUrlBase}")
     //git push $gitUrlWithCredentials :refs/tags/''' + "${env.GIT_VERSION}" + '''
