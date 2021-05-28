@@ -64,16 +64,18 @@ def jfrogUpload(Map args) {
 }
 
 def octoUpload(Map args) {
-  zip zipFile: "${args.zipfile}", archive: false, dir: 'octo_upload', overwrite: true
-  echo "upload ${args.zipfile} to octopus ${env.OCTOPUS_SERVER}."
+  filename = "${args.name}.${env.GIT_VERSION}.zip"
+  zip zipFile: "${filename}", archive: false, dir: 'octo_upload', overwrite: true
+  echo "upload ${filename} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
-    powershell "${tool('Octo CLI')} push --package ${args.zipfile} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}"
+    powershell "${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}"
   }
 }
 
 def pushTag() {
   echo "create and push new git tag"
   powershell "git tag -f ${env.GIT_VERSION}"
+  GIT_CREDS = credentials('BitBucket')
   powershell "git push origin :refs/tags/${env.GIT_VERSION}"
   //git push origin <version>
 }
