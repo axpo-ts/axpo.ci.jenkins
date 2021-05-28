@@ -72,7 +72,10 @@ def octoUpload(Map args) {
 }
 
 def pushTag() {
-  echo "push git tags"
+  echo "create and push new git tag"
+  powershell "git tag -f ${env.GIT_VERSION}"
+  //git push origin :refs/tags/<version>
+  //git push origin <version>
 }
 
 return this
