@@ -71,7 +71,7 @@ def octoUpload(Map args) {
   }
 }
 
-def pushTags() {
+def pushTag() {
   echo "push git tags"
 }
 
