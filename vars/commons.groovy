@@ -36,7 +36,10 @@ def dotnetPublish(Map args) {
 }
 
 def publishAllowed() {
-  false
+  anyOf {
+    environment name: 'FORCE_PUBLISH', value: 'true'
+    branch 'master'
+  }
 }
 
 def jfrogUpload(Map args) {
