@@ -35,6 +35,10 @@ def dotnetPublish(Map args) {
   powershell "dotnet publish ${args.project} --no-build -c Release -o octo_upload"
 }
 
+def allowPublish() {
+  false
+}
+
 def jfrogUpload(Map args) {
   artifactoryBuildNumber = "${env.GIT_BRANCH}-${env.BUILD_ID}"
   rtServer (
