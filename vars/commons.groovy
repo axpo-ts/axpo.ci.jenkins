@@ -35,7 +35,7 @@ def dotnetPublish(Map args) {
   powershell "dotnet publish ${args.project} --no-build -c Release -o octo_upload"
 }
 
-def allowPublish() {
+def publishAllowed() {
   false
 }
 
