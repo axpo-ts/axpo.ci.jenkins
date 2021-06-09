@@ -38,7 +38,7 @@ def dotnetPublish(Map args) {
 def publishAllowed() {
   allOf {
     expression { env.FORCE_PUBLISH == true || env.BRANCH_NAME == 'master' }
-    expression { return !changeRequest()) }
+    expression { return !changeRequest() }
   }
 }
 
