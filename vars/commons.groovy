@@ -35,6 +35,24 @@ def dotnetPublish(Map args) {
   powershell "dotnet publish ${args.project} --no-build -c Release -o octo_upload"
 }
 
+def publishAllowed() {
+  isForced = env.FORCE_PUBLISH == 'true'
+  isMaster = env.BRANCH_NAME == 'master'
+  isPR = env.CHANGE_ID != null
+  if (isPR) {
+    echo "no publish allowed from change requests"
+    return false
+  } else if (isForced) {
+    echo "publishing forced by parameter"
+    return true
+  } else if (isMaster) {
+    echo "automatically publishig from master"
+    return true
+  } else {
+    return false
+  }
+}
+
 def jfrogUpload(Map args) {
   artifactoryBuildNumber = "${env.GIT_BRANCH}-${env.BUILD_ID}"
   rtServer (
