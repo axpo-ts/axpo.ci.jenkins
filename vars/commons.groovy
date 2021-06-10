@@ -37,8 +37,16 @@ def dotnetPublish(Map args) {
 
 def publishAllowed() {
   isForced = env.FORCE_PUBLISH == 'true'
-  echo "isFOrced: ${isForced}"
-  if ((env.FORCE_PUBLISH == 'true' || env.BRANCH_NAME == 'master') && env.CHANGE_ID == null) {
+  isMaster = env.BRANCH_NAME == 'master'
+  isPR = env.CHANGE_ID == null
+  if (isPR) {
+    echo "no publish allowed from change requests"
+    return false
+  } else if (isForced) {
+    echo "publishing forced by parameter"
+    return true
+  } else if (isMaster) {
+    echo "automatically publishig from master"
     return true
   } else {
     return false
