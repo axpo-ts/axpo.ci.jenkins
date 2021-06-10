@@ -37,9 +37,9 @@ def dotnetPublish(Map args) {
 
 def publishAllowed() {
   if ((env.FORCE_PUBLISH == true || env.BRANCH_NAME == 'master') && env.CHANGE_ID == null) {
-    true
+    return true
   } else {
-    false
+    return false
   }
 }
 
