@@ -20,8 +20,8 @@ def makeVersion() {
 
 def dotnetBuild() {
   powershell "dotnet --version"
-  powershell "dotnet clean"
   powershell "dotnet restore"
+  powershell "dotnet clean . -c Release"
   powershell "dotnet build . -c Release /p:Version=${env.GIT_VERSION}"
 }
 
