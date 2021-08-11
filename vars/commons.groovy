@@ -84,7 +84,8 @@ def jfrogUpload(Map args) {
 
 def octoUpload(Map args) {
   filename = "${args.name}.${env.GIT_VERSION}.zip"
-  zip zipFile: "${filename}", archive: false, dir: 'octo_upload', overwrite: true
+  directory = args.get('directory', 'octo_upload')
+  zip zipFile: "${filename}", archive: false, dir: "${directory}", overwrite: true
   echo "upload ${filename} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
     powershell("${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}")
