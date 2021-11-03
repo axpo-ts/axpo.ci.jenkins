@@ -59,7 +59,7 @@ def jfrogUpload(Map args) {
   rtServer (
     id: 'ARTIFACTORY_SERVER',
     url: "${env.ARTIFACTORY_SERVER}",
-    credentialsId: 'svc-jenkins'
+    credentialsId: 'svc-jenkins-artifactory'
   )
   echo "upload artefacts to artifactory ${env.ARTIFACTORY_SERVER} under ${env.PROJECT_NAME} and build number ${artifactoryBuildNumber}."
   rtUpload (
