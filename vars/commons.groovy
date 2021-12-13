@@ -25,7 +25,7 @@ def dotnetBuild() {
   powershell "dotnet build . -c Release /p:Version=${env.GIT_VERSION}"
 }
 
-def dotnetPack(Map args) {
+def dotnetPack(Map args = [:]) {
   outDir = "./artefacts/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
