@@ -25,11 +25,14 @@ def dotnetBuild() {
   powershell "dotnet build . -c Release /p:Version=${env.GIT_VERSION}"
 }
 
-def dotnetPack() {
+def dotnetPack(Map args = [:]) {
   outDir = "./artefacts/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
-  powershell "dotnet pack . -c Release --include-symbols --include-source --no-build --output ${outDir} /p:Version=${env.GIT_VERSION}"
+  noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
+  packCmd = "dotnet pack . -c Release --include-symbols --include-source ${noBuild} --output ${outDir} /p:Version=${env.GIT_VERSION}"
+  echo "create nuget packages with: ${packCmd}"
+  powershell "${packCmd}"
 }
 
 def dotnetPublish(Map args) {
