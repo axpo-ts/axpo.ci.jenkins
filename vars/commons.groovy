@@ -31,7 +31,7 @@ def dotnetPack(Map args = [:]) {
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
   noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
   packCmd = "dotnet pack . -c Release --include-symbols --include-source ${noBuild} --output ${outDir} /p:Version=${env.GIT_VERSION}"
-  echo "${packCmd}"
+  echo "create nuget packages with: ${packCmd}"
   powershell "${packCmd}"
 }
 
