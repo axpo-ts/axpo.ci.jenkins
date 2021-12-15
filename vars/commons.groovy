@@ -36,7 +36,8 @@ def dotnetPack(Map args = [:]) {
 }
 
 def dotnetPublish(Map args) {
-  powershell "dotnet publish ${args.project} --no-build -c Release -o octo_upload"
+  noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
+  powershell "dotnet publish ${args.project} -c Release ${noBuild} -o octo_upload /p:Version=${env.GIT_VERSION}"
 }
 
 def publishAllowed() {
