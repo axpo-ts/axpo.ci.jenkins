@@ -36,8 +36,11 @@ def dotnetPack(Map args = [:]) {
 }
 
 def dotnetPublish(Map args) {
+  outDir = "./octo_upload/"
+  powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
+  powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
   noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
-  powershell "dotnet publish ${args.project} -c Release ${noBuild} -o octo_upload /p:Version=${env.GIT_VERSION}"
+  powershell "dotnet publish ${args.project} -c Release ${noBuild} -o ${outDir} /p:Version=${env.GIT_VERSION}"
 }
 
 def publishAllowed() {
@@ -87,6 +90,7 @@ def jfrogUpload(Map args) {
 }
 
 def octoUpload(Map args) {
+  powershell "Remove-Item *.zip -ErrorAction Ignore"
   filename = "${args.name}.${env.GIT_VERSION}.zip"
   directory = args.get('directory', 'octo_upload')
   zip zipFile: "${filename}", archive: false, dir: "${directory}", overwrite: true
