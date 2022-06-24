@@ -26,7 +26,7 @@ def dotnetBuild() {
 }
 
 def dotnetPack(Map args = [:]) {
-  outDir = "./artefacts/"
+  outDir = "./artefacts/nuget/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
   noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
@@ -76,7 +76,7 @@ def jfrogUpload(Map args) {
     spec: '''{
       "files": [
         {
-          "pattern": "artefacts/*.nupkg",
+          "pattern": "artefacts/nuget/*.nupkg",
           "target": "''' + "${args.target}" + '''"
         }
       ]
