@@ -36,7 +36,7 @@ def dotnetPack(Map args = [:]) {
 }
 
 def dotnetPublish(Map args) {
-  outDir = "./octo_upload/"
+  outDir = args.get('directory', './octo_upload')
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
   noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
