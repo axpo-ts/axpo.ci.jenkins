@@ -36,11 +36,14 @@ def dotnetPack(Map args = [:]) {
 }
 
 def dotnetPublish(Map args) {
-  outDir = args.get('directory', './octo_upload')
+  outDir = "./bin/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
   noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
   powershell "dotnet publish ${args.project} -c Release ${noBuild} -o ${outDir} /p:Version=${env.GIT_VERSION}"
+  powershell "Remove-Item *.zip -ErrorAction Ignore"
+  filename = "${args.name}.${env.GIT_VERSION}.zip"
+  zip zipFile: "${filename}", archive: false, dir: "${outDir}", overwrite: true
 }
 
 def publishAllowed() {
@@ -68,7 +71,8 @@ def jfrogUpload(Map args) {
     url: "${env.ARTIFACTORY_SERVER}",
     credentialsId: 'svc-jenkins-artifactory'
   )
-  echo "upload artefacts to artifactory ${env.ARTIFACTORY_SERVER} under ${env.PROJECT_NAME} and build number ${artifactoryBuildNumber}."
+  pattern = args.get('directory', 'artefacts/nuget') + "/" + args.get('files', '*.nupkg')
+  echo "upload artefacts ${pattern} to artifactory ${env.ARTIFACTORY_SERVER} under ${env.PROJECT_NAME} and build number ${artifactoryBuildNumber}."
   rtUpload (
     serverId: 'ARTIFACTORY_SERVER',
     buildName: "${env.PROJECT_NAME}",
@@ -76,7 +80,7 @@ def jfrogUpload(Map args) {
     spec: '''{
       "files": [
         {
-          "pattern": "artefacts/nuget/*.nupkg",
+          "pattern": "''' + "${pattern}" + '''",
           "target": "''' + "${args.target}" + '''"
         }
       ]
@@ -90,10 +94,7 @@ def jfrogUpload(Map args) {
 }
 
 def octoUpload(Map args) {
-  powershell "Remove-Item *.zip -ErrorAction Ignore"
   filename = "${args.name}.${env.GIT_VERSION}.zip"
-  directory = args.get('directory', 'octo_upload')
-  zip zipFile: "${filename}", archive: false, dir: "${directory}", overwrite: true
   echo "upload ${filename} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
     powershell("${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}")
