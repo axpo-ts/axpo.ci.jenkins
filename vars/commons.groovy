@@ -86,11 +86,13 @@ def jfrogUpload(Map args) {
       ]
     }'''
   )
-  rtPublishBuildInfo (
-    serverId: 'ARTIFACTORY_SERVER',
-    buildName: "${env.PROJECT_NAME}",
-    buildNumber: "${artifactoryBuildNumber}"
-  )
+  if (args.get('publishBuild', 'true')) {
+    rtPublishBuildInfo (
+      serverId: 'ARTIFACTORY_SERVER',
+      buildName: "${env.PROJECT_NAME}",
+      buildNumber: "${artifactoryBuildNumber}"
+    )
+  }
 }
 
 def octoUpload(Map args) {
