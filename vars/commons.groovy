@@ -29,7 +29,7 @@ def dotnetPack(Map args = [:]) {
   outDir = "./artefacts/nuget/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
-  noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
+  noBuild = (args.get('forceBuild', false)) ? "" : "--no-build"
   packCmd = "dotnet pack . -c Release --include-symbols --include-source ${noBuild} --output ${outDir} /p:Version=${env.GIT_VERSION}"
   echo "create nuget packages with: ${packCmd}"
   powershell "${packCmd}"
@@ -39,7 +39,7 @@ def dotnetPublish(Map args) {
   outDir = "./bin/"
   powershell "Remove-Item ${outDir} -Recurse -ErrorAction Ignore"
   powershell "New-Item -ItemType Directory -Force -Path ${outDir}"
-  noBuild = (args.get('forceBuild', 'false')) ? "" : "--no-build"
+  noBuild = (args.get('forceBuild', false)) ? "" : "--no-build"
   powershell "dotnet publish ${args.project} -c Release ${noBuild} -o ${outDir} /p:Version=${env.GIT_VERSION}"
   powershell "Remove-Item *.zip -ErrorAction Ignore"
   filename = "${args.name}.${env.GIT_VERSION}.zip"
@@ -86,7 +86,7 @@ def jfrogUpload(Map args) {
       ]
     }'''
   )
-  if (args.get('publishBuild', 'true')) {
+  if (args.get('publishBuild', true)) {
     rtPublishBuildInfo (
       serverId: 'ARTIFACTORY_SERVER',
       buildName: "${env.PROJECT_NAME}",
