@@ -100,7 +100,7 @@ def octoUpload(Map args) {
   spaceArgument = ""
   if(args.containsKey('space')) {
     echo "Non-default space specified ${args.space}"
-    spaceArgument = "--space ${args.name}" 
+    spaceArgument = "--space ${args.space}" 
   }
   if (args.containsKey('directory')) {
     echo "archiving ${args.directory} to ${filename}."
