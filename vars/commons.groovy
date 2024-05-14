@@ -97,13 +97,18 @@ def jfrogUpload(Map args) {
 
 def octoUpload(Map args) {
   filename = "${args.name}.${env.GIT_VERSION}.zip"
+  spaceArgument = ""
+  if(args.containsKey('space')) {
+    echo "Non-default space specified ${args.space}"
+    spaceArgument = "--space ${args.name}" 
+  }
   if (args.containsKey('directory')) {
     echo "archiving ${args.directory} to ${filename}."
     zip zipFile: "${filename}", archive: false, dir: "${args.directory}", overwrite: true
   }
   echo "upload ${filename} to octopus ${env.OCTOPUS_SERVER}."
   withCredentials([string(credentialsId: 'OctopusAPIKey', variable: 'APIKey')]) {
-    powershell("${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey}")
+    powershell("${tool('Octo CLI')} push --package ${filename} --replace-existing --server ${env.OCTOPUS_SERVER} --apiKey ${APIKey} ${spaceArgument} ")
   }
 }
 
