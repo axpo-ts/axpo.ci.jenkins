@@ -142,8 +142,8 @@ def pushTag() {
             echo "${gitUrlBase}"
             echo "${GITHUB_TOKEN}"
             echo "Pushing tag to GitHub using token authentication..."
-            powershell("git push https://x-access-token:${GITHUB_TOKEN}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}") // Delete remote tag (if exists)
-            powershell("git push https://x-access-token:${GITHUB_TOKEN}@${gitUrlBase} ${env.GIT_VERSION}") // Push new tag
+            powershell("git push ${GIT_URL} :refs/tags/${env.GIT_VERSION}") 
+            powershell("git push ${GIT_URL} ${env.GIT_VERSION}")
         }
     } else {
         error "Unsupported git provider in URL: ${gitUrlBase}"
