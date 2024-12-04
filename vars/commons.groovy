@@ -130,24 +130,21 @@ def pushTag() {
     gitUrlBase = "${GIT_URL}".split("//")[1]
 
     if (gitUrlBase.contains("bitbucket.org")) {
-        echo "Using Bitbucket for authentication"
-        withCredentials([usernamePassword(credentialsId: 'bb-system_jenkins_bitbucket', usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
-            powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
-            powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} ${env.GIT_VERSION}")
-        }
+      echo "Using Bitbucket for authentication"
+      credentials_id="bb-system_jenkins_bitbucket"
+    
     } else if (gitUrlBase.contains("github.com")) {
-        echo "Using GitHub for authentication"
-        // Push the tag to the remote repository using a GitHub token
-        withCredentials([string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
-            echo "${gitUrlBase}"
-            echo "${GITHUB_TOKEN}"
-            echo "Pushing tag to GitHub using token authentication..."
-            powershell("git push ${GIT_URL} :refs/tags/${env.GIT_VERSION}") 
-            powershell("git push ${GIT_URL} ${env.GIT_VERSION}")
-        }
+      echo "Using GitHub for authentication"
+      credentials_id="github-pat"
     } else {
         error "Unsupported git provider in URL: ${gitUrlBase}"
     }
+
+    withCredentials([usernamePassword(credentialsId: "${credentials_id}", usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
+        powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
+        powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} ${env.GIT_VERSION}")
+    }
+    
 }
 
 
