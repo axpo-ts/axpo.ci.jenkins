@@ -137,9 +137,11 @@ def pushTag() {
         }
     } else if (gitUrlBase.contains("github.com")) {
         echo "Using GitHub for authentication"
-        withCredentials([string(credentialsId: 'github_personal_access_token', variable: 'GIT_TOKEN')]) {
-            powershell("git push https://${GIT_TOKEN}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
-            powershell("git push https://${GIT_TOKEN}@${gitUrlBase} ${env.GIT_VERSION}")
+        // Push the tag to the remote repository using a GitHub token
+        withCredentials([string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
+            echo "Pushing tag to GitHub using token authentication..."
+            powershell("git push https://x-access-token:${GITHUB_TOKEN}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}") // Delete remote tag (if exists)
+            powershell("git push https://x-access-token:${GITHUB_TOKEN}@${gitUrlBase} ${env.GIT_VERSION}") // Push new tag
         }
     } else {
         error "Unsupported git provider in URL: ${gitUrlBase}"
