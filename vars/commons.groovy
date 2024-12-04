@@ -139,6 +139,7 @@ def pushTag() {
         echo "Using GitHub for authentication"
         // Push the tag to the remote repository using a GitHub token
         withCredentials([string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
+            echo "${GITHUB_TOKEN}"
             echo "Pushing tag to GitHub using token authentication..."
             powershell("git push https://x-access-token:${GITHUB_TOKEN}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}") // Delete remote tag (if exists)
             powershell("git push https://x-access-token:${GITHUB_TOKEN}@${gitUrlBase} ${env.GIT_VERSION}") // Push new tag
