@@ -113,13 +113,27 @@ def octoUpload(Map args) {
 }
 
 def pushTag() {
-  echo "create new git tag"
-  powershell "git tag -f ${env.GIT_VERSION}"
-  gitUrlBase = "${GIT_URL}".split("//")[1]
-  withCredentials([usernamePassword(credentialsId: 'bb-system_jenkins_bitbucket', usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
-    powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
-    powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} ${env.GIT_VERSION}")
-  }
+    echo "Create new git tag"
+    powershell "git tag -f ${env.GIT_VERSION}"
+
+    // Extract base URL
+    gitUrlBase = "${GIT_URL}".split("//")[1]
+
+    if (gitUrlBase.contains("bitbucket.org")) {
+      echo "Using Bitbucket for authentication"
+      credentials_id="bb-system_jenkins_bitbucket"
+    
+    } else if (gitUrlBase.contains("github.com")) {
+      echo "Using GitHub for authentication"
+      credentials_id="github-pat"
+    } else {
+        error "Unsupported git provider in URL: ${gitUrlBase}"
+    }
+
+    withCredentials([usernamePassword(credentialsId: "${credentials_id}", usernameVariable: 'GIT_USR', passwordVariable: 'GIT_PWD')]) {
+        powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} :refs/tags/${env.GIT_VERSION}")
+        powershell("git push https://${GIT_USR}:${GIT_PWD}@${gitUrlBase} ${env.GIT_VERSION}")
+    }
 }
 
 return this
