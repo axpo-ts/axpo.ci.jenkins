@@ -6,9 +6,7 @@ def setProjectName() {
 
 def makeVersion() {
   env.IGNORE_NORMALISATION_GIT_HEAD_MOVE = 1
-  // debugging
   powershell "dotnet-gitversion /version"
-  powershell "del .git/gitversion_cache"
   // generate semantic version using gitversion
   powershell "dotnet-gitversion /output buildserver"
   powershell "cat gitversion.properties"
