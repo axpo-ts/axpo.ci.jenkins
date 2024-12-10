@@ -6,8 +6,10 @@ def setProjectName() {
 
 def makeVersion() {
   env.IGNORE_NORMALISATION_GIT_HEAD_MOVE = 1
+  powershell "dotnet-gitversion /version"
   // generate semantic version using gitversion
   powershell "dotnet-gitversion /output buildserver"
+  powershell "cat gitversion.properties"
   // inject gitversion props as environment variables
   readFile('gitversion.properties').split("\r\n").each { line ->
     el = line.split("=")
