@@ -22,7 +22,8 @@ def makeVersion() {
 
 def dotnetBuild() {
   powershell "dotnet --version"
-  powershell "dotnet restore"
+  powershell "dotnet nuget config get all --show-path" 
+  powershell "dotnet restore --allow-insecure-connections"
   powershell "dotnet clean . -c Release"
   powershell "dotnet build . -c Release /p:Version=${env.GIT_VERSION}"
 }
