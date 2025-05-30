@@ -25,7 +25,7 @@ def dotnetBuild() {
   powershell "dotnet nuget config get all --show-path" 
   powershell "dotnet restore"
   powershell "dotnet clean . -c Release"
-  powershell "dotnet build . -c Release /p:Version=${env.GIT_VERSION}"
+  powershell "dotnet build . -c Release -p:Version=${env.GIT_VERSION}"
 }
 
 def dotnetPack(Map args = [:]) {
